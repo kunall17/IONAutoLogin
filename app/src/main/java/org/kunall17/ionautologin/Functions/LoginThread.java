@@ -1,4 +1,4 @@
-package com.kunall17.ionautologin.Functions;
+package org.kunall17.ionautologin.Functions;
 
 import android.content.Context;
 import android.util.Log;
@@ -8,7 +8,7 @@ import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.widget.Toast;
 
-import com.kunall17.ionautologin.R;
+import org.kunall17.ionautologin.R;
 
 /**
  * Created by kunall17 on 12/21/15.

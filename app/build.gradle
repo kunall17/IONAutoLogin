@@ -1,33 +1,16 @@
 apply plugin: 'com.android.application'
-buildscript {
-    repositories {
-        maven { url 'https://maven.fabric.io/public' }
-    }
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.21.2'
-    }
-}
-apply plugin: 'io.fabric'
 
-repositories {
-    maven { url 'https://maven.fabric.io/public' }
-}
-dependencies {
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.5@aar') {
-        transitive = true
-    }
-}
 android {
     signingConfigs {
     }
     compileSdkVersion 25
-    buildToolsVersion "25.0.2"
+    buildToolsVersion "25.0.3"
     defaultConfig {
-        applicationId "com.kunall17.ionautologin"
+        applicationId "org.kunall17.ionautologin"
         minSdkVersion 15
-        targetSdkVersion 22
+        targetSdkVersion 25
         versionCode 5
-        versionName '1.22'
+        versionName '1.0'
     }
     buildTypes {
         release {
@@ -42,9 +25,11 @@ android {
 dependencies {
     compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.3.1'
     compile 'com.squareup.okhttp3:okhttp:3.4.1'
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:support-v4:25.1.0'
-    compile 'com.android.support:recyclerview-v7:25.1.0'
+    compile 'com.android.support:design:25.3.1'
+    compile 'com.android.support:support-v4:25.3.1'
+    compile 'com.android.support:recyclerview-v7:25.3.1'
+
+    compile 'io.sentry:sentry-android:1.6.7'
 }

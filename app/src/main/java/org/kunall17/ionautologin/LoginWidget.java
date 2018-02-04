@@ -1,4 +1,4 @@
-package com.kunall17.ionautologin;
+package org.kunall17.ionautologin;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
@@ -13,7 +13,7 @@ import android.net.wifi.WifiManager;
 import android.widget.RemoteViews;
 import android.widget.Toast;
 
-import com.kunall17.ionautologin.Functions.LoginThread;
+import org.kunall17.ionautologin.Functions.LoginThread;
 
 /**
  * Implementation of App Widget functionality.

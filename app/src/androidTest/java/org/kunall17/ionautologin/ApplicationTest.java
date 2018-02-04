@@ -1,4 +1,4 @@
-package com.kunall17.ionautologin;
+package org.kunall17.ionautologin;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

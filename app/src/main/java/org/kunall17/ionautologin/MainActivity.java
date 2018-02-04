@@ -1,4 +1,4 @@
-package com.kunall17.ionautologin;
+package org.kunall17.ionautologin;
 
 import android.Manifest;
 import android.animation.ArgbEvaluator;
@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.pm.PackageManager;
 import android.content.res.ColorStateList;
 import android.graphics.drawable.ColorDrawable;
 import android.net.NetworkInfo;
@@ -18,6 +17,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
+import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.preference.ListPreference;
 import android.preference.Preference;
@@ -28,7 +28,6 @@ import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -41,16 +40,18 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.kunall17.ionautologin.Functions.CheckInternet;
-import com.kunall17.ionautologin.Functions.Logger;
-import com.kunall17.ionautologin.Functions.LoginConstants;
-import com.kunall17.ionautologin.Functions.LoginThread;
-import com.kunall17.ionautologin.Functions.SQLiteDatabaseAdapter;
-import com.kunall17.ionautologin.Functions.SharedPreferencesClass;
-import com.kunall17.ionautologin.Functions.User;
-import com.kunall17.ionautologin.Functions.differentFunctions;
+import org.kunall17.ionautologin.Functions.CheckInternet;
+import org.kunall17.ionautologin.Functions.Logger;
+import org.kunall17.ionautologin.Functions.LoginConstants;
+import org.kunall17.ionautologin.Functions.LoginThread;
+import org.kunall17.ionautologin.Functions.SQLiteDatabaseAdapter;
+import org.kunall17.ionautologin.Functions.SharedPreferencesClass;
+import org.kunall17.ionautologin.Functions.differentFunctions;
 
 import java.sql.SQLIntegrityConstraintViolationException;
+
+import io.sentry.Sentry;
+import io.sentry.android.AndroidSentryClientFactory;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -61,8 +62,8 @@ public class MainActivity extends AppCompatActivity {
     CheckInternet checkInternet;
     SharedPreferencesClass spc;
     private SQLiteDatabaseAdapter database;
-    private String defaultUsername;
-    private String defaultPassword;
+    public String defaultUsername;
+    public String defaultPassword;
     LoginThread loginThread;
     private SharedPreferencesClass preferencesClass;
     SQLiteDatabaseAdapter databaseAdapter;
@@ -171,6 +172,15 @@ public class MainActivity extends AppCompatActivity {
             main.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(main);
         }
+
+        // Use the Sentry DSN (client key) from the Project Settings page on Sentry
+        String sentryDsn = "https://publicKey:secretKey@host:port/1?options";
+        Sentry.init(sentryDsn, new AndroidSentryClientFactory(this));
+
+        // Alternatively, if you configured your DSN in a `sentry.properties`
+        // file (see the configuration documentation).
+        Sentry.init(new AndroidSentryClientFactory(this));
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -207,7 +217,7 @@ public class MainActivity extends AppCompatActivity {
 //        saveCredentials();
         color_red = getResources().getColor(R.color.not_connected_red);
         color_green = getResources().getColor(R.color.connected_green);
-        preferenceFragment = new preferenceFragment();
+        preferenceFragment = new PreferenceCustomFragment(MainActivity.this);
         getFragmentManager().beginTransaction().replace(R.id.content_frame, preferenceFragment).commit();
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -226,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    PreferenceFragment preferenceFragment;
+    PreferenceCustomFragment preferenceFragment;
 
     public void startedFromWidget() {
         final WifiManager wifiManager = (WifiManager) getSystemService(Context.WIFI_SERVICE);
@@ -328,7 +338,7 @@ public class MainActivity extends AppCompatActivity {
         };
     }
 
-    private void CheckInternetNow() {
+    public void CheckInternetNow() {
         checkInternet = new CheckInternet(listener, MainActivity.this);
         checkInternet.executeOnExecutor(AsyncTask.SERIAL_EXECUTOR);
     }
@@ -438,120 +448,5 @@ public class MainActivity extends AppCompatActivity {
         colorAnimation.setStartDelay(0);
         colorAnimation.start();
     }
-
-    public void startTimer() {
-        Log.d("d", "timer started");
-        cdt = new CountDownTimer(Integer.MAX_VALUE, minutes * 60000) { //60000
-            @Override
-            public void onTick(long millisUntilFinished) {
-                CheckInternetNow();
-            }
-
-            @Override
-            public void onFinish() {
-                startTimer();
-            }
-        }.start();
-    }
-
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public class preferenceFragment extends PreferenceFragment {
-        public Preference IDPref;
-        SwitchPreference sp_autocheck;
-        ListPreference lp;
-        SwitchPreference check_wifi;
-        private ListPreference check_list;
-
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-
-            addPreferencesFromResource(R.xml.pref_settings);
-            setHasOptionsMenu(true);
-
-            IDPref = findPreference("studentID");
-
-
-            check_list = (ListPreference) findPreference("check_list");
-            sp_autocheck = (SwitchPreference) findPreference("check_enabled");
-
-
-            IDPref.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
-                @Override
-                public boolean onPreferenceClick(Preference preference) {
-                    Intent intent = new Intent(getActivity(), ID_list.class);
-                    startActivityForResult(intent, 2);
-                    return true;
-                }
-            });
-            sp_autocheck.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o) {
-                    if (!sp_autocheck.isChecked()) {
-                        check_list.setEnabled(true);
-                        startTimer();
-                    } else {
-                        if (cdt != null) cdt.cancel();
-                        check_list.setEnabled(false);
-                    }
-                    return true;
-                }
-            });
-
-            check_list.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
-                @Override
-                public boolean onPreferenceChange(Preference preference, Object o) {
-                    minutes = Integer.parseInt(lp.getValue());
-                    spc.saveIntegerToSharedPreferences(SharedPreferencesClass.SP_MINUTES, minutes);
-                    return true;
-                }
-            });
-
-            getAndSetDefaults();
-
-//            ListPreference lp = (ListPreference) findPreference("list_default_id");
-//            String[] array = {"1", "2", "3"};
-//            CharSequence[] entries = array;
-//            CharSequence[] entryValues = array;
-//            lp.setEntries(entries);
-//            lp.setDefaultValue("1");
-//            lp.setEntryValues(entryValues);
-
-
-        }
-
-        @Override
-        public void onActivityResult(int requestCode, int resultCode, Intent data) {
-            saveCredentials();
-            loginThread.changeCred(defaultUsername, defaultPassword);
-
-        }
-
-        @Override
-        public void onResume() {
-            super.onResume();
-//            saveCredentials();
-            loginThread.changeCred(defaultUsername, defaultPassword);
-            IDPref.setSummary("Default- " + spc.getDefaultID());
-
-        }
-
-        public void getAndSetDefaults() {
-            if (spc.getDefaultID() != null && databaseAdapter.ifUserNameExists(spc.getDefaultID())) {
-                IDPref.setSummary("Default- " + spc.getDefaultID());
-            }
-            sp_autocheck.setChecked(spc.getAutoCheckBoolean());
-            check_list.setValue("" + spc.getDefaultMinutes());
-        }
-
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
-
 }
+

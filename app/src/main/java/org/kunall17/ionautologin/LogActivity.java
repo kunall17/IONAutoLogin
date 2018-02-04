@@ -1,4 +1,4 @@
-package com.kunall17.ionautologin;
+package org.kunall17.ionautologin;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +9,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.kunall17.ionautologin.Functions.Logger;
+import org.kunall17.ionautologin.Functions.Logger;
 
-import com.kunall17.ionautologin.R;
+import org.kunall17.ionautologin.R;
 
 public class LogActivity extends AppCompatActivity {
 

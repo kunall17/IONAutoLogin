@@ -1,4 +1,4 @@
-package com.kunall17.ionautologin;
+package org.kunall17.ionautologin;
 
 import android.app.Dialog;
 import android.os.Bundle;
@@ -17,13 +17,13 @@ import android.widget.Toast;
 import java.sql.SQLIntegrityConstraintViolationException;
 import java.util.List;
 
-import com.kunall17.ionautologin.Functions.Encryption;
-import com.kunall17.ionautologin.Functions.Logger;
-import com.kunall17.ionautologin.Functions.SQLiteDatabaseAdapter;
-import com.kunall17.ionautologin.Functions.SharedPreferencesClass;
-import com.kunall17.ionautologin.Functions.User;
+import org.kunall17.ionautologin.Functions.Encryption;
+import org.kunall17.ionautologin.Functions.Logger;
+import org.kunall17.ionautologin.Functions.SQLiteDatabaseAdapter;
+import org.kunall17.ionautologin.Functions.SharedPreferencesClass;
+import org.kunall17.ionautologin.Functions.User;
 
-import com.kunall17.ionautologin.R;
+import org.kunall17.ionautologin.R;
 
 public class ID_list extends AppCompatActivity {
     List<User> users;
